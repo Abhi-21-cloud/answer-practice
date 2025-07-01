@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RBI Grade B Descriptive Answer Practice</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9fc;
+      padding: 20px;
+      max-width: 950px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #2d2d5c;
+    }
+    .developer {
+      text-align: center;
+      color: red;
+      margin-top: -10px;
+      font-weight: bold;
+    }
+    .question-box {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 30px;
+      position: relative;
+      border-radius: 12px;
+    }
+    .question-box div[contenteditable="true"] {
+      font-size: 16px;
+      border: none;
+      padding: 8px;
+      background: #f2f2f2;
+      outline: none;
+      margin-bottom: 10px;
+      border-radius: 8px;
+    }
+    .label {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .word-count {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #0047ab;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+    textarea {
+      width: 100%;
+      height: 125px;
+      padding: 10px;
+      font-size: 15px;
+      border: 1px solid #aaa;
+      resize: none;
+      margin-bottom: 10px;
+      border-radius: 10px;
+    }
+    .timer {
+      font-weight: bold;
+      color: #b30000;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 8px 16px;
+      background-color: #0047ab;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+      margin-right: 10px;
+      border-radius: 8px;
+    }
+    button:hover {
+      background-color: #003080;
+    }
+  </style>
+</head>
+<body>
+
+<h1>RBI Grade B – Descriptive Answer Practice</h1>
+<div class="developer">(Developed by A.K. Anshu)</div>
+
+<!-- 15-Marker -->
+<div class="question-box">
+  <div class="label">📝 15-Mark Question (600 words | 30 minutes)</div>
+  <div class="word-count" id="count15">0 / 600</div>
+  <div contenteditable="true" id="q15">
+    Discuss the role of financial inclusion in economic development. Mention steps taken by RBI and government.
+  </div>
+  <textarea id="ans15" placeholder="Write full answer here (Intro + Body + Conclusion)..."></textarea>
+  <div class="timer" id="timer15">Time Left: 30:00</div>
+  <button onclick="downloadAnswer('15')">Download 15-Marker Answer</button>
+</div>
+
+<!-- 10-Marker -->
+<div class="question-box">
+  <div class="label">📝 10-Mark Question (400 words | 15 minutes)</div>
+  <div class="word-count" id="count10">0 / 400</div>
+  <div contenteditable="true" id="q10">
+    What is the impact of inflation targeting by RBI? Provide examples.
+  </div>
+  <textarea id="ans10" placeholder="Write full answer here (Intro + Body + Conclusion)..."></textarea>
+  <div class="timer" id="timer10">Time Left: 15:00</div>
+  <button onclick="downloadAnswer('10')">Download 10-Marker Answer</button>
+</div>
+
+<script>
+  const ans15 = document.getElementById("ans15");
+  const ans10 = document.getElementById("ans10");
+  const q15 = document.getElementById("q15");
+  const q10 = document.getElementById("q10");
+  const count15 = document.getElementById("count15");
+  const count10 = document.getElementById("count10");
+
+  function countWords(text) {
+    return text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+  }
+
+  function updateCounts() {
+    count15.textContent = `${countWords(ans15.value)} / 600`;
+    count10.textContent = `${countWords(ans10.value)} / 400`;
+    localStorage.setItem('ans15', ans15.value);
+    localStorage.setItem('ans10', ans10.value);
+  }
+
+  ans15.addEventListener("input", () => {
+    updateCounts();
+    startTimer('15');
+  });
+
+  ans10.addEventListener("input", () => {
+    updateCounts();
+    startTimer('10');
+  });
+
+  // Load saved content if any
+  window.onload = function () {
+    if (localStorage.getItem('ans15')) ans15.value = localStorage.getItem('ans15');
+    if (localStorage.getItem('ans10')) ans10.value = localStorage.getItem('ans10');
+    updateCounts();
+  };
+
+  let timers = {
+    "15": { time: 30 * 60, started: false, textarea: ans15, display: "timer15" },
+    "10": { time: 15 * 60, started: false, textarea: ans10, display: "timer10" },
+  };
+
+  function startTimer(id) {
+    if (timers[id].started) return;
+    timers[id].started = true;
+
+    let time = timers[id].time;
+    const textarea = timers[id].textarea;
+    const display = document.getElementById(timers[id].display);
+
+    const interval = setInterval(() => {
+      const min = Math.floor(time / 60);
+      const sec = time % 60;
+      display.textContent = `Time Left: ${min}:${sec.toString().padStart(2, '0')}`;
+      time--;
+
+      if (time < 0) {
+        clearInterval(interval);
+        display.textContent = "Time's up!";
+        textarea.disabled = true;
+      }
+    }, 1000);
+  }
+
+  function downloadAnswer(id) {
+    const question = document.getElementById(`q${id}`).innerText.trim();
+    const answer = document.getElementById(`ans${id}`).value.trim();
+    const content = `Question: ${question}\n\nAnswer:\n${answer}`;
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `RBI_Answer_${id}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+</script>
+
+</body>
+</html>
